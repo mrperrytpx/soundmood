@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import { io } from "socket.io-client";
 
-const socket = io("https://serenity-hearth.vercel.app");
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL);
 
 const HomePage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
