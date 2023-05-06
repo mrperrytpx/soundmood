@@ -13,26 +13,50 @@ import {
 import Image from "next/image";
 import { io } from "socket.io-client";
 
-const socket = io(process.env.NEXT_PUBLIC_SERVER_URL);
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, {
+  withCredentials: true,
+});
 
 const HomePage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ landing, visitors, listeners }) => {
+> = ({ landingText, visitorsText, listenersText }) => {
   const [volume, setVolume] = useState("1");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [listeners, setListeners] = useState<string | number>(0);
+  const [visitors, setVisitors] = useState<string | number>(0);
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const handlePausePlay = () => {
     if (!isPlaying) {
       audioRef.current?.play();
+      socket.emit("start-streaming");
       setIsPlaying(!isPlaying);
     } else {
       audioRef.current?.pause();
-
+      socket.emit("stop-streaming");
       setIsPlaying(!isPlaying);
     }
   };
+
+  useEffect(() => {
+    socket.on("start-streaming", (data) => {
+      setListeners(data.listeners);
+    });
+    socket.on("stop-streaming", (data) => {
+      setListeners(data.listeners);
+    });
+
+    socket.on("user-disconnect", (data) => {
+      setListeners(data.listeners);
+      setVisitors(data.visitors);
+    });
+
+    socket.on("user-connect", (data) => {
+      setVisitors(data.visitors);
+      setListeners(data.listeners);
+    });
+  }, [socket, setListeners, setVisitors]);
 
   const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newVolume = e.target.value;
@@ -101,17 +125,17 @@ const HomePage: NextPage<
           </form>
         </div>
         <p className="h-6" id="landingText">
-          {landing}
+          {landingText}
         </p>
       </div>
       <div className="flex items-center flex-col mt-auto mb-2">
         <div className="flex gap-1 text-center flex-wrap items-center justify-center">
-          <p id="visitorsText">{visitors}</p>
-          <span id="visitorsSpan">0</span>
+          <p id="visitorsText">{visitorsText}</p>
+          <span id="visitorsSpan">{visitors}</span>
         </div>
         <div className="flex gap-1 text-center flex-wrap items-center justify-center">
-          <p id="listenersText">{listeners}</p>
-          <span id="listenersSpan">0</span>
+          <p id="listenersText">{listenersText}</p>
+          <span id="listenersSpan">{listeners}</span>
         </div>
       </div>
     </div>
@@ -121,15 +145,15 @@ const HomePage: NextPage<
 export default HomePage;
 
 export const getServerSideProps: GetServerSideProps<{
-  landing: string;
-  visitors: string;
-  listeners: string;
+  landingText: string;
+  visitorsText: string;
+  listenersText: string;
 }> = async () => {
   return {
     props: {
-      landing: LANDING_TEXTS[getRandomNumber(LANDING_TEXTS.length)],
-      visitors: VISITORS_TEXTS[getRandomNumber(VISITORS_TEXTS.length)],
-      listeners: LISTENERS_TEXTS[getRandomNumber(LISTENERS_TEXTS.length)],
+      landingText: LANDING_TEXTS[getRandomNumber(LANDING_TEXTS.length)],
+      visitorsText: VISITORS_TEXTS[getRandomNumber(VISITORS_TEXTS.length)],
+      listenersText: LISTENERS_TEXTS[getRandomNumber(LISTENERS_TEXTS.length)],
     },
   };
 };
