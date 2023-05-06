@@ -3,6 +3,7 @@ const express = require("express");
 const http = require("http");
 const helmet = require("helmet");
 const { Server } = require("socket.io");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
@@ -12,6 +13,13 @@ const MESSAGES = Object.freeze({
   INCREMENT: "increment",
   DECREMENT: "decrement",
 });
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.use(helmet());
 
