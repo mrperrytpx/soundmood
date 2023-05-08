@@ -16,11 +16,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://serenity-hearth.vercel.app/" />
         <meta
-          property="og:image"
-          content="https://raw.githubusercontent.com/mrperrytpx/soundmood/main/nextjs-client/public/background.webp"
-        />
-
-        <meta
           property="og:description"
           content="Serenity Hearth - relax with the sound of a purring cat and a crackling fireplace."
         />

@@ -108,7 +108,7 @@ const HomePage: NextPage<
         <div className="my-1 flex w-full max-w-[200px] justify-center rounded-lg">
           <form className="w-full">
             <input
-              aria-labelledby="volumeSlider"
+              aria-label="Volume"
               id="volumeSlider"
               name="volumeSlider"
               type="range"
@@ -119,9 +119,6 @@ const HomePage: NextPage<
               step={0.01}
               className="slider w-full appearance-none rounded-lg bg-transparent"
             />
-            <label className="block w-full text-center" htmlFor="volumeSlider">
-              Volume
-            </label>
           </form>
         </div>
         <p className="text-center" id="landingText">
@@ -133,6 +130,7 @@ const HomePage: NextPage<
             href="https://twitter.com/serenity_hearth"
             target="_blank"
             rel="noreferrer"
+            aria-label="Twitter"
           >
             <Icon
               name="twitter"
@@ -144,6 +142,7 @@ const HomePage: NextPage<
             href="https://github.com/mrperrytpx/soundmood"
             target="_blank"
             rel="noreferrer"
+            aria-label="Github"
           >
             <Icon
               name="github"
