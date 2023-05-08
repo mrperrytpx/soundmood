@@ -8,6 +8,7 @@ import {
 } from "next";
 import Image from "next/image";
 import { io } from "socket.io-client";
+import { Icon } from "../components/Icon";
 
 const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, {
   withCredentials: true,
@@ -38,17 +39,13 @@ const HomePage: NextPage<
     socket.emit("get-streamers");
 
     socket.on("current-streamers", (data) => {
-      console.log("current data", data);
       setListeners(data.listeners);
     });
 
     socket.on("user-start", (data) => {
-      console.log("user-start", data);
       setListeners(data.listeners);
     });
     socket.on("user-stop", (data) => {
-      console.log("user-stop", data);
-
       setListeners(data.listeners);
     });
 
@@ -57,7 +54,7 @@ const HomePage: NextPage<
       socket.off("user-stop");
       socket.off("current-streamers");
     };
-  }, [socket, setListeners]);
+  }, [setListeners]);
 
   const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newVolume = e.target.value;
@@ -69,22 +66,23 @@ const HomePage: NextPage<
   };
 
   return (
-    <div className="bg-black/70 w-full flex flex-col items-center justify-center h-full">
-      <div className="flex flex-col items-center my-auto justify-center w-[min(95%,500px)] gap-4 p-4 rounded-lg">
-        <h1 className="text-3xl sm:text-5xl font-bold text-center">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-black/70 p-2">
+      <div className="my-auto flex w-[min(95%,500px)] flex-col items-center justify-center gap-8 rounded-lg p-4">
+        <h1 className="text-center text-3xl font-bold sm:text-5xl">
           Serenity Hearth
         </h1>
 
-        <div className="w-20 md:w-24 aspect-square flex flex-col items-center justify-center">
+        <div className="flex aspect-square w-20 flex-col items-center justify-center md:w-24">
           <button
             onClick={handlePausePlay}
             id="toggle"
-            className="w-full bg-[#1fcfc1] aspect-square flex items-center justify-center flex-row bg-black rounded-full"
+            className="flex aspect-square w-full animate-wavepulse flex-row items-center justify-center rounded-full bg-[#1fcfc1] opacity-80 hover:opacity-100"
           >
             <Image
               width={200}
+              loading="eager"
               height={200}
-              className={`w-full h-full ${
+              className={`h-full w-full ${
                 isPlaying ? "hidden" : "inline-block"
               }`}
               src="play.svg"
@@ -93,7 +91,8 @@ const HomePage: NextPage<
             <Image
               width={100}
               height={100}
-              className={`w-full h-full ${
+              loading="eager"
+              className={`h-full w-full ${
                 isPlaying ? "inline-block" : "hidden"
               }`}
               src="pause.svg"
@@ -106,7 +105,7 @@ const HomePage: NextPage<
             Your browser does not support the audio element.
           </audio>
         </div>
-        <div className="w-full max-w-[200px] my-1 flex justify-center rounded-lg">
+        <div className="my-1 flex w-full max-w-[200px] justify-center rounded-lg">
           <form className="w-full">
             <input
               aria-labelledby="volumeSlider"
@@ -118,19 +117,43 @@ const HomePage: NextPage<
               value={volume}
               onChange={handleVolumeChange}
               step={0.01}
-              className="w-full slider rounded-lg bg-transparent appearance-none"
+              className="slider w-full appearance-none rounded-lg bg-transparent"
             />
-            <label className="text-center w-full block" htmlFor="volumeSlider">
+            <label className="block w-full text-center" htmlFor="volumeSlider">
               Volume
             </label>
           </form>
         </div>
-        <p className="h-6" id="landingText">
+        <p className="text-center" id="landingText">
           {landingText}
         </p>
+        <div className="flex w-full items-center justify-center gap-8">
+          <a
+            className="group inline-block h-10 w-10"
+            href="https://twitter.com/serenity_hearth"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icon
+              name="twitter"
+              className="h-full w-full group-hover:fill-white"
+            />
+          </a>
+          <a
+            className="group inline-block h-10 w-10 rounded-full bg-black"
+            href="https://github.com/mrperrytpx/soundmood"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icon
+              name="github"
+              className="h-full w-full group-hover:fill-white"
+            />
+          </a>
+        </div>
       </div>
-      <div className="flex items-center flex-col mt-auto mb-2">
-        <div className="flex gap-1 text-center flex-wrap items-center justify-center">
+      <div className="mb-2 mt-auto flex flex-col items-center">
+        <div className="flex flex-wrap items-center justify-center gap-1 text-center">
           <p id="listenersText">{listenersText}</p>
           <span id="listenersSpan">{listeners}</span>
         </div>
