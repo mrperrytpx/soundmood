@@ -18,45 +18,39 @@ const io = new Server(server, {
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL }));
 
-let visitors = 0;
 let listeners = 0;
 
 io.on("connection", (socket) => {
-  visitors++;
-
-  socket.broadcast.emit("user-connect", { visitors, listeners });
-
-  let isStreaming = false;
   console.log("user connection");
 
+  let isStreaming = false;
+
   socket.on("start-streaming", () => {
-    console.log("started streaming");
+    console.log("start");
     isStreaming = true;
     listeners++;
-    socket.broadcast.emit("start-streaming", { listeners });
+    io.emit("user-start", { listeners });
+  });
+
+  socket.on("get-streamers", () => {
+    socket.emit("current-streamers", { listeners });
   });
 
   socket.on("stop-streaming", () => {
-    console.log("stopped streaming");
+    console.log("end");
+
     isStreaming = false;
-    listeners--;
-    socket.broadcast.emit("start-streaming", { listeners });
+    if (listeners >= 0) listeners--;
+    io.emit("user-stop", { listeners });
   });
 
-  // socket.on("visibility-change", () => {});
-
   socket.on("disconnect", () => {
-    visitors--;
-    if (isStreaming) listeners--;
-    socket.broadcast.emit("user-disconnect", { visitors, listeners });
+    console.log("disconnect);");
+    if (isStreaming && listeners >= 0) listeners--;
+    io.emit("user-stop", { listeners });
   });
 });
 
 server.listen(process.env.PORT || 5050, () =>
   console.log(`SERVER STARTED AT PORT ${process.env.PORT}`)
 );
-
-const MESSAGES = Object.freeze({
-  INCREMENT: "increment",
-  DECREMENT: "decrement",
-});

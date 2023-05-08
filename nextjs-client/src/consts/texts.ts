@@ -15,9 +15,5 @@ export const LISTENERS_TEXTS = [
   "Number of people reminiscing about their childhood cat:",
   "Number of people relaxing in the virtual longue:",
   "Number of people seeing how the cat reacts to the purring:",
-];
-
-export const VISITORS_TEXTS = [
   "Number of people checking out the fireplace:",
-  "Number of people peeking through the window:",
 ];

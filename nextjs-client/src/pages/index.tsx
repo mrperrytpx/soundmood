@@ -1,9 +1,5 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import {
-  LANDING_TEXTS,
-  LISTENERS_TEXTS,
-  VISITORS_TEXTS,
-} from "../consts/texts";
+import { LANDING_TEXTS, LISTENERS_TEXTS } from "../consts/texts";
 import { getRandomNumber } from "../consts/getRandomNumber";
 import {
   GetServerSideProps,
@@ -19,11 +15,10 @@ const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, {
 
 const HomePage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ landingText, visitorsText, listenersText }) => {
+> = ({ landingText, listenersText }) => {
   const [volume, setVolume] = useState("1");
   const [isPlaying, setIsPlaying] = useState(false);
   const [listeners, setListeners] = useState<string | number>(0);
-  const [visitors, setVisitors] = useState<string | number>(0);
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -40,23 +35,29 @@ const HomePage: NextPage<
   };
 
   useEffect(() => {
-    socket.on("start-streaming", (data) => {
-      setListeners(data.listeners);
-    });
-    socket.on("stop-streaming", (data) => {
+    socket.emit("get-streamers");
+
+    socket.on("current-streamers", (data) => {
+      console.log("current data", data);
       setListeners(data.listeners);
     });
 
-    socket.on("user-disconnect", (data) => {
+    socket.on("user-start", (data) => {
+      console.log("user-start", data);
       setListeners(data.listeners);
-      setVisitors(data.visitors);
+    });
+    socket.on("user-stop", (data) => {
+      console.log("user-stop", data);
+
+      setListeners(data.listeners);
     });
 
-    socket.on("user-connect", (data) => {
-      setVisitors(data.visitors);
-      setListeners(data.listeners);
-    });
-  }, [socket, setListeners, setVisitors]);
+    return () => {
+      socket.off("user-start");
+      socket.off("user-stop");
+      socket.off("current-streamers");
+    };
+  }, [socket, setListeners]);
 
   const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newVolume = e.target.value;
@@ -78,7 +79,7 @@ const HomePage: NextPage<
           <button
             onClick={handlePausePlay}
             id="toggle"
-            className="w-full aspect-square flex items-center justify-center flex-row bg-black rounded-full"
+            className="w-full bg-[#1fcfc1] aspect-square flex items-center justify-center flex-row bg-black rounded-full"
           >
             <Image
               width={200}
@@ -130,10 +131,6 @@ const HomePage: NextPage<
       </div>
       <div className="flex items-center flex-col mt-auto mb-2">
         <div className="flex gap-1 text-center flex-wrap items-center justify-center">
-          <p id="visitorsText">{visitorsText}</p>
-          <span id="visitorsSpan">{visitors}</span>
-        </div>
-        <div className="flex gap-1 text-center flex-wrap items-center justify-center">
           <p id="listenersText">{listenersText}</p>
           <span id="listenersSpan">{listeners}</span>
         </div>
@@ -146,13 +143,11 @@ export default HomePage;
 
 export const getServerSideProps: GetServerSideProps<{
   landingText: string;
-  visitorsText: string;
   listenersText: string;
 }> = async () => {
   return {
     props: {
       landingText: LANDING_TEXTS[getRandomNumber(LANDING_TEXTS.length)],
-      visitorsText: VISITORS_TEXTS[getRandomNumber(VISITORS_TEXTS.length)],
       listenersText: LISTENERS_TEXTS[getRandomNumber(LISTENERS_TEXTS.length)],
     },
   };
