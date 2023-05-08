@@ -21,12 +21,9 @@ app.use(cors({ origin: process.env.CLIENT_URL }));
 let listeners = 0;
 
 io.on("connection", (socket) => {
-  console.log("user connection");
-
   let isStreaming = false;
 
   socket.on("start-streaming", () => {
-    console.log("start");
     isStreaming = true;
     listeners++;
     io.emit("user-start", { listeners });
@@ -37,15 +34,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("stop-streaming", () => {
-    console.log("end");
-
     isStreaming = false;
     if (listeners >= 0) listeners--;
     io.emit("user-stop", { listeners });
   });
 
   socket.on("disconnect", () => {
-    console.log("disconnect);");
     if (isStreaming && listeners >= 0) listeners--;
     io.emit("user-stop", { listeners });
   });
