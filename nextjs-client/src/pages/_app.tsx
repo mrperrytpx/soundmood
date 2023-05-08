@@ -17,7 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta property="og:url" content="https://serenity-hearth.vercel.app/" />
         <meta
           property="og:image"
-          content="<%= require('../../public/background.webp') %>"
+          content="https://raw.githubusercontent.com/mrperrytpx/soundmood/main/nextjs-client/public/background.webp"
         />
 
         <meta
