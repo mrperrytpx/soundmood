@@ -13,6 +13,8 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
     credentials: true,
   },
+  pingInterval: 2000,
+  pingTImeout: 30000,
 });
 
 app.use(helmet());
@@ -27,6 +29,10 @@ io.on("connection", (socket) => {
     isStreaming = true;
     listeners++;
     io.emit("user-start", { listeners });
+  });
+
+  socket.on("pong", () => {
+    console.log("pong");
   });
 
   socket.on("get-streamers", () => {

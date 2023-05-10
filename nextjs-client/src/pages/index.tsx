@@ -38,6 +38,11 @@ const HomePage: NextPage<
   useEffect(() => {
     socket.emit("get-streamers");
 
+    socket.on("ping", () => {
+      console.log("pong");
+      socket.emit("pong", {});
+    });
+
     socket.on("current-streamers", (data) => {
       setListeners(data.listeners);
     });
@@ -53,6 +58,7 @@ const HomePage: NextPage<
       socket.off("user-start");
       socket.off("user-stop");
       socket.off("current-streamers");
+      socket.off("ping");
     };
   }, [setListeners]);
 
