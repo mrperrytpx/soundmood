@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
 
   socket.on("stop-streaming", () => {
     isStreaming = false;
-    if (listeners >= 0) listeners--;
+    if (listeners > 0) listeners--;
     io.emit("user-stop", { listeners });
   });
 
