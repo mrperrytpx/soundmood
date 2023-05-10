@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("get-streamers", () => {
+    if (listeners <= 0) listeners = 0;
     socket.emit("current-streamers", { listeners });
   });
 
@@ -46,7 +47,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    if (isStreaming && listeners >= 0) listeners--;
+    if (isStreaming && listeners > 0) listeners--;
     io.emit("user-stop", { listeners });
   });
 });
