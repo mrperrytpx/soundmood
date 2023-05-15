@@ -10,7 +10,7 @@ There's a bug where the websocket connection is lost after a phone has been idle
 
 <img src="readme/serenity.png" width="700">
 
-##### Technologies and libraries used:
+### Technologies and libraries used:
 
 Next.js, Typescript, TailwindCSS, Express.js, Socket io
 
